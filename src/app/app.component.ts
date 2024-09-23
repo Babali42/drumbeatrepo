@@ -3,12 +3,12 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Genre} from './models/genre';
 import {BehaviorSubject} from 'rxjs';
 import {Beat} from "./models/beat";
-import {SoundService} from "./services/sound.service";
 import {JsonFilesService} from "./services/json-files.service";
 import {Mode} from "./models/mode-toggle.model";
 import {ModeToggleService} from "./services/mode-toggle.service";
 import {JsonBeat} from "./models/primary/json-beat";
 import {Convert} from "./models/primary/convert";
+import {SoundTone} from "./services/sound-tone";
 
 @Component({
   selector: 'app-root',
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   private currentMode: Mode = Mode.DARK;
   isSideBarDisplayed: boolean = true;
 
-  constructor(private responsive: BreakpointObserver, private jsonFilesService: JsonFilesService, public soundService: SoundService, private modeToggleService: ModeToggleService) {
+  constructor(private responsive: BreakpointObserver, private jsonFilesService: JsonFilesService, public sound: SoundTone, private modeToggleService: ModeToggleService) {
     this.fileNameBehaviourSubject = new BehaviorSubject<string>('metal');
     this.modeToggleService.modeChanged$.subscribe((mode: Mode) => {
       this.currentMode = mode;
@@ -46,12 +46,12 @@ export class AppComponent implements OnInit {
     this.fileNameBehaviourSubject.subscribe(fileName => {
       this.jsonFilesService.get<JsonBeat>(fileName, 'beats/').subscribe((result: JsonBeat) => {
         this.beat = Convert.toBeat(result);
-        if (this.soundService.isPlaying)
-          this.soundService.pause();
-        this.soundService.reset();
-        this.soundService.setBpm(this.beat.bpm);
-        this.soundService.setTracks(this.beat.tracks);
-        this.soundService.setStepNumber(this.beat.tracks[0].steps.length);
+        if (this.sound.isPlaying)
+          this.sound.pause();
+        this.sound.reset();
+        this.sound.setBpm(this.beat.bpm);
+        this.sound.setTracks(this.beat.tracks);
+        this.sound.setStepNumber(this.beat.tracks[0].steps.length);
       });
     });
   }
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit {
   }
 
   toggleIsPlaying(): void {
-    this.soundService.playPause().then(
+    this.sound.playPause().then(
       () => {
       },
       () => {
@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.code == "Space") {
-      this.soundService.playPause().then(
+      this.sound.playPause().then(
         () => {
         },
         () => {
