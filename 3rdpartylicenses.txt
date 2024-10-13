@@ -32,6 +32,9 @@ MIT
 @angular/platform-browser
 MIT
 
+angular-in-memory-web-api
+MIT
+
 rxjs
 Apache-2.0
                                Apache License
